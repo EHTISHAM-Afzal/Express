@@ -1,10 +1,19 @@
 const express = require("express");
-
+const customMiddlware = require("./middlware/customMiddleware.js");
+const morgan = require("morgan");
 
 const app = express();
 
 
+// Middleware
+
 app.use(express.json())
+
+// Custome Middlewares
+
+app.use(customMiddlware)
+app.use(morgan("dev"))
+
 
 const courses = [
     {
@@ -32,8 +41,25 @@ app.get("/about", (req, res) => {
 })
 
 app.get('/courses', (req, res) => {
-    res.send(courses)
+    const {sort} = req.query
+    if (sort && sort.toLocaleLowerCase() === "desc") {
+        res.send(courses.reverse())
+    } else{
+        res.send(courses)
+    }
 })
+
+app.get("/error", (req, res) => {
+    throw new Error("Oops i made a mistake")
+})
+
+
+// Query Parameters
+
+app.get("/query", (req, res) => {
+    res.send(req.query? req.query : "no query parameters")
+})
+
 
 
 // POST Method /create data
@@ -43,6 +69,7 @@ app.post('/courses', (req, res) => {
         id: courses.length + 1,
         courseName: req.body.courseName
     }
+    if (req.body.courseName === undefined) return res.status(400).send("course name is required")
     courses.push(course)
     res.send(course)
 })
@@ -70,23 +97,25 @@ app.delete("/courses/:coursename", (req, res) => {
 
 
 
-// Query Parameters
-
-app.get("/course", (req, res) => {
-    res.send(req.query)
-})
-
-
-
 app.get("/courses/:coursename", (req, res) => {
     const course = courses.find(c => c.courseName === req.params.coursename)
-    if (!course) {
-        return res.status(404).send("the course you are looking for is not found")
-    } else {
-        res.send(course)
-    }
+    if (!course) return res.status(404).send("the course you are looking for is not found")
+    res.send(course)
 })
 
+// 404 route
+
+app.use(function (req, res, next) {
+    res.status(404).send('Sorry cant find that!');
+})
+
+
+// Error  handling
+
+app.use(function (err, req, res, next) {
+    console.error(err.stack)
+    res.status(500).send(err.message)
+})
 
 const port = process.env.PORT || 3001;
 

@@ -1,0 +1,19 @@
+{
+  "Courses": [
+    {
+      "id": 1,
+      "createdAt": "Tue, 17 Oct 2023 12:15:17 GMT",
+      "courseName": "JavaScript"
+    },
+    {
+      "id": 2,
+      "createdAt": "Tue, 17 Oct 2023 12:16:26 GMT",
+      "courseName": "C++"
+    },
+    {
+      "id": 3,
+      "createdAt": "Tue, 17 Oct 2023 12:16:48 GMT",
+      "courseName": "Java"
+    }
+  ]
+}
